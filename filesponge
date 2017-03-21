@@ -9,7 +9,7 @@ parser.add_argument("-o", "--output", help="Output destination. If none specifie
 args = parser.parse_args()
 
 def fileSponge(dirs, outputDir):
-    commonList = findCommon(dirs)
+    commonList = findCommon(dirs).rstrip()
     print "commonList: " + commonList
     outputCommon(commonList, outputDir)
 
@@ -19,9 +19,7 @@ def findCommon(dirs):
     for index in dirs:
         if prev is None:
             prev = index
-            continue
         else:
-            print prev + ", " + index
             diff = "diff --brief -Nrs %s %s" % (prev, index)
             egrepPattern = "^Files .+ and .+ are identical$"
             awkPattern = "(Files | and | are identical)"
@@ -35,11 +33,12 @@ def findCommon(dirs):
 
 def outputCommon(commonList, outputDir):
     if outputDir is not None:
-        options = "-arv"
-        exclusions = ".\w"
+        options = "-arvn"
+        exclusions = "*"
         basePath = os.getcwd()
 
-        args = ["rsync", options, "--exclude", exclusions, "--files-from", commonList, basePath, outputDir]
+        # TODO: get rsync to copy files from commonList. Currently not getting files
+        args = ["rsync", options, "--include", commonList, "--exclude", exclusions, basePath, outputDir]
         print args
 
         proc = subprocess.Popen(args, stdout=subprocess.PIPE)
@@ -55,7 +54,6 @@ def usage():
 
     if args.output:
         outputDir = args.output or None
-        print "from usage: " + outputDir
 
     if args.directory:
         dirList = args.directory.split()
