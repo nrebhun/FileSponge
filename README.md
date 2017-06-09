@@ -9,15 +9,24 @@ By automatically identifying common files and project structure, projects may be
 2. run `build.sh`
 
 ## Usage
+* output to `common/`:
+```
+$ ./fileSponge "test/foo" "test/bar" -o common
+```
 
-`$ ./fileSponge "test/foo" "test/bar"`
-  * for assistance, run with `-h` or flail helplessly
+* output to `STDOUT`:
+```
+$ ./fileSponge "test/foo" "test/bar"
+```
+
+* for assistance, run with `-h` or flail helplessly
 
 ## Features
 
-* compares **two** directories
+* compares **two** directories for identical files (i.e. files with matching name and contents)
 * outputs identified duplicates to `STDOUT` or a directory specified with `-o`
-* copied files maintain the organizational structure of the source directory
+  * to clean up, run: `$ ./clean.sh <fileSponge-output-directory>`
+* copies files, maintaining the organizational structure of the source directory
 
 ## System Requirements
 
@@ -28,7 +37,7 @@ By automatically identifying common files and project structure, projects may be
 
 #### v0.2.0
 * Add simpler CLI usage and a help menu (thanks, [argparse])
-* Add directory minimum (two, with partial support for handling more)
+* Add directory minimum (two)
 * Add support for optional output target, default is `STDOUT`
 * Add caring about versioning, apparently
 

@@ -10,14 +10,12 @@ args = parser.parse_args()
 
 def fileSponge(dirs, outputDir):
     commonList = findIdentical(dirs).rstrip()
-    print "Files with identical contents:\n" + commonList
     outputCommon(commonList, outputDir)
 
 def findIdentical(dirs):
     prev = None
 
     for index in dirs:
-        print ("prev = %s, index = %s" % (prev, index))
         if prev is None:
             prev = index
         else:
@@ -27,27 +25,48 @@ def findIdentical(dirs):
 
             diffProcess = subprocess.Popen(diff.split(), stdout=subprocess.PIPE)
             egrepProcess = subprocess.Popen(["egrep", egrepPattern], stdout=subprocess.PIPE, stdin=diffProcess.stdout)
-            awkProcess = subprocess.Popen(["awk", "-F", awkPattern, "{print $2}"], stdout=subprocess.PIPE, stdin=egrepProcess.stdout)
+            awkProcess = subprocess.Popen(["awk", "-F", awkPattern, "{print($2, \"==\", $3)}"], stdout=subprocess.PIPE, stdin=egrepProcess.stdout)
             (out, err) = awkProcess.communicate()
 
             return out
 
 def outputCommon(commonList, outputDir):
     if outputDir is not None:
-        options = "-arvn"
-        exclusions = "*"
-        basePath = os.getcwd()
+        options = "-av"
+        exclusions = "--exclude='*'"
+        srcPath = "./"
+        destPath = "%s/" % (outputDir)
+        targetFiles = isolateTargetFiles(commonList)
+        inclusions = "--files-from=./commonFiles.txt"#generateRsyncInclusionString(targetFiles)
 
-        # TODO: get rsync to copy files from commonList. Currently not getting files
-        args = ["rsync", options, "--include", commonList, "--exclude", exclusions, basePath, outputDir]
-        print args
+        writeInclusionListToDisk(targetFiles)
 
-        proc = subprocess.Popen(args, stdout=subprocess.PIPE)
-        (out, err) = proc.communicate()
+        rsync = "rsync %s %s %s %s" % (options, inclusions, srcPath, destPath)
+        print rsync
 
-        return out
+        rsyncProcess = subprocess.call(rsync.split())
     else:
-        print(commonList)
+        print("Identical files:\n%s" % (commonList))
+
+def isolateTargetFiles(commonList):
+    targetFiles = []
+
+    for line in commonList.split('\n'):
+        targetFiles.append(line.split()[0])
+
+    return targetFiles
+
+def generateRsyncInclusionString(targetFiles):
+    inclusions = ''
+    for item in targetFiles:
+        inclusions += " --include='./%s'" % (item)
+
+    return inclusions
+
+def writeInclusionListToDisk(targetFiles):
+    outfile = open('commonFiles.txt', 'w')
+    for item in targetFiles:
+        outfile.write("%s\n" % item)
 
 def usage():
     dirList = []
