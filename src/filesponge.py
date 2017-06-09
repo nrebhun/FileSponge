@@ -9,14 +9,15 @@ parser.add_argument("-o", "--output", help="Output destination. If none specifie
 args = parser.parse_args()
 
 def fileSponge(dirs, outputDir):
-    commonList = findCommon(dirs).rstrip()
-    print "commonList: " + commonList
+    commonList = findIdentical(dirs).rstrip()
+    print "Files with identical contents:\n" + commonList
     outputCommon(commonList, outputDir)
 
-def findCommon(dirs):
+def findIdentical(dirs):
     prev = None
 
     for index in dirs:
+        print ("prev = %s, index = %s" % (prev, index))
         if prev is None:
             prev = index
         else:

@@ -6,10 +6,11 @@ By automatically identifying common files and project structure, projects may be
 ## Installation
 
 1. Clone this repo
+2. run `build.sh`
 
 ## Usage
 
-`$ ./filesponge "foo/" "bar/"`
+`$ ./fileSponge "test/foo" "test/bar"`
   * for assistance, run with `-h` or flail helplessly
 
 ## Features
@@ -27,7 +28,7 @@ By automatically identifying common files and project structure, projects may be
 
 #### v0.2.0
 * Add simpler CLI usage and a help menu (thanks, [argparse])
-* Add directory minimum of two, with partial support for handling more
+* Add directory minimum (two, with partial support for handling more)
 * Add support for optional output target, default is `STDOUT`
 * Add caring about versioning, apparently
 
