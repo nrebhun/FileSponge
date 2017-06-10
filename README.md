@@ -1,4 +1,4 @@
-# FileSponge
+# FileSponge [![Build Status](https://travis-ci.org/nrebhun/FileSponge.svg?branch=master)](https://travis-ci.org/nrebhun/FileSponge)
 Extracts files duplicated across directories, to keep your projects DRY.
 
 By automatically identifying common files and project structure, projects may be better managed or modularized.
